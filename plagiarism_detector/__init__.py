@@ -1,0 +1,1 @@
+# This file makes plagiarism_detector a Python package

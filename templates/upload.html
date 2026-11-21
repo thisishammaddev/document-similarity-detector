@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Upload Document for Plagiarism Check</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="file">Choose file</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="file" name="file" required>
+                            <label class="custom-file-label" for="file">Select file...</label>
+                            <div class="invalid-feedback">Please select a file.</div>
+                        </div>
+                        <small class="form-text text-muted">
+                            Allowed file types: {{ config.ALLOWED_EXTENSIONS|join(', ') }}. Max size: {{ "%.0f"|format(config.MAX_CONTENT_LENGTH / (1024*1024)) }}MB.
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-info btn-block">Upload and Check</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">
+                    Your document will be processed and compared against existing documents in the database.
+                    Results will be available shortly after upload.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// Script to update the custom file input label with the selected file name
+document.addEventListener('DOMContentLoaded', function () {
+    var fileInput = document.getElementById('file');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e){
+            var fileName = e.target.files[0] ? e.target.files[0].name : 'Select file...';
+            var nextSibling = e.target.nextElementSibling;
+            if (nextSibling && nextSibling.classList.contains('custom-file-label')) {
+                nextSibling.innerText = fileName;
+            }
+        });
+    }
+
+    // Bootstrap validation
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+});
+</script>
+{% endblock %}

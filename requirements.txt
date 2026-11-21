@@ -1,0 +1,7 @@
+Flask
+SQLAlchemy
+# psycopg2-binary # No longer needed for SQLite
+scikit-learn
+nltk
+python-docx
+pdfminer.six

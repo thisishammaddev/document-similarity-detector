@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Document Details: {{ document.original_filename }}</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Original Filename:</dt>
+                <dd class="col-sm-9">{{ document.original_filename }}</dd>
+
+                <dt class="col-sm-3">Internal ID:</dt>
+                <dd class="col-sm-9">{{ document.id }}</dd>
+
+                <dt class="col-sm-3">File Type:</dt>
+                <dd class="col-sm-9"><span class="badge badge-info">{{ document.file_type }}</span></dd>
+
+                <dt class="col-sm-3">Uploaded By:</dt>
+                <dd class="col-sm-9">{{ document.uploader.username if document.uploader else 'N/A' }}</dd>
+
+                <dt class="col-sm-3">Upload Date:</dt>
+                <dd class="col-sm-9">{{ document.upload_date.strftime('%Y-%m-%d %H:%M:%S') if document.upload_date else 'N/A' }}</dd>
+            </dl>
+
+            <h6>Document Content:</h6>
+            <div class="document-content p-3 border bg-light">
+                <pre>{{ document.text_content }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Similarity Reports</h4>
+        {% if reports %}
+            <div class="list-group">
+                {% for report in reports %}
+                    <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                Similarity with: 
+                                <a href="{{ url_for('view_document', doc_id=report.existing_document.id) }}">
+                                    {{ report.existing_document.original_filename }}
+                                </a>
+                                (ID: {{ report.existing_document.id }})
+                            </h5>
+                            <small class="text-muted">{{ report.generated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        <p class="mb-1">
+                            Overall Similarity Score: 
+                            <span class="similarity-score 
+                                {% if report.similarity_score >= 0.7 %}score-high
+                                {% elif report.similarity_score >= 0.4 %}score-medium
+                                {% elif report.similarity_score >= 0.1 %}score-low
+                                {% else %}score-very-low
+                                {% endif %}">
+                                {{ "%.2f%%"|format(report.similarity_score * 100) }}
+                            </span>
+                        </p>
+                        <small class="text-muted">Details: {{ report.report_details }}</small>
+                        {# Add link to a more detailed comparison view if implemented #}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">No similarity reports found for this document, or it has not been compared yet.</p>
+            <p class="text-muted">If this document was just uploaded, the plagiarism check might still be in progress or no similar documents were found.</p>
+        {% endif %}
+    </div>
+    <div class="mt-3">
+         <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Document List</a>
+    </div>
+</div>
+{% endblock %}
